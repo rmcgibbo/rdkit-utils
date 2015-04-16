@@ -1,8 +1,13 @@
 """
 Tests for serial.py.
 """
-import cPickle
-from cStringIO import StringIO
+from __future__ import print_function, division, absolute_import
+try:
+    import cPickle as pickle
+    from cStringIO import StringIO
+except ImportError:
+    import pickle
+    from io import StringIO
 import gzip
 import shutil
 import tempfile
@@ -168,7 +173,7 @@ class TestMolReader(TestMolIO):
             f.write('{}\t{}'.format(Chem.MolToSmiles(self.aspirin), 'aspirin'))
         self.reader.open(filename)
         mols = self.reader.get_mols()
-        mol = mols.next()
+        mol = next(mols)
         assert mol.ToBinary() == self.aspirin.ToBinary()
         assert mol.GetProp('_Name') == self.aspirin.GetProp('_Name')
 
@@ -190,7 +195,7 @@ class TestMolReader(TestMolIO):
         """
         _, filename = tempfile.mkstemp(suffix='.pkl', dir=self.temp_dir)
         with open(filename, 'wb') as f:
-            cPickle.dump([self.aspirin], f, cPickle.HIGHEST_PROTOCOL)
+            pickle.dump([self.aspirin], f, pickle.HIGHEST_PROTOCOL)
         self.reader.open(filename)
         mols = self.reader.get_mols()
         assert mols.next().ToBinary() == self.aspirin.ToBinary()
@@ -201,7 +206,7 @@ class TestMolReader(TestMolIO):
         """
         _, filename = tempfile.mkstemp(suffix='.pkl.gz', dir=self.temp_dir)
         with gzip.open(filename, 'wb') as f:
-            cPickle.dump([self.aspirin], f, cPickle.HIGHEST_PROTOCOL)
+            pickle.dump([self.aspirin], f, pickle.HIGHEST_PROTOCOL)
         self.reader.open(filename)
         mols = self.reader.get_mols()
         assert mols.next().ToBinary() == self.aspirin.ToBinary()
@@ -244,7 +249,7 @@ class TestMolReader(TestMolIO):
         mols = self.reader.get_mols()
         mols = list(mols)
         assert len(mols) == 2
-        for i in xrange(len(mols)):
+        for i in range(len(mols)):
             assert mols[i].ToBinary() == self.ref_mols[i].ToBinary()
 
     def test_read_multiple_smiles(self):
@@ -265,7 +270,7 @@ class TestMolReader(TestMolIO):
         mols = self.reader.get_mols()
         mols = list(mols)
         assert len(mols) == 2
-        for i in xrange(len(mols)):
+        for i in range(len(mols)):
             assert mols[i].ToBinary() == ref_mols[i].ToBinary()
 
     def test_read_multiconformer(self):
@@ -350,7 +355,7 @@ class TestMolReader(TestMolIO):
         mols = reader.get_mols()
         # FIXME get ToBinary test to work
         # assert mols.next().ToBinary() == self.aspirin_h.ToBinary()
-        assert Chem.MolToMolBlock(mols.next()) == Chem.MolToMolBlock(
+        assert Chem.MolToMolBlock(next(mols)) == Chem.MolToMolBlock(
             self.aspirin_h)
 
     def test_remove_hydrogens(self):
@@ -574,8 +579,8 @@ class TestMolWriter(TestMolIO):
         # compare files
         with open(filename) as f:
             data = f.read()
-            assert data == cPickle.dumps([self.aspirin],
-                                         cPickle.HIGHEST_PROTOCOL)
+            assert data == pickle.dumps([self.aspirin],
+                                        pickle.HIGHEST_PROTOCOL)
 
     def test_write_pickle_gz(self):
         """
@@ -594,8 +599,8 @@ class TestMolWriter(TestMolIO):
         # compare files
         with gzip.open(filename) as f:
             data = f.read()
-            assert data == cPickle.dumps([self.aspirin],
-                                         cPickle.HIGHEST_PROTOCOL)
+            assert data == pickle.dumps([self.aspirin],
+                                        pickle.HIGHEST_PROTOCOL)
 
     def test_stereo_setup(self):
         """
@@ -649,7 +654,7 @@ class TestMolWriter(TestMolIO):
         writer.close()
         self.reader.open(filename)
         mols = self.reader.get_mols()
-        mol = mols.next()
+        mol = next(mols)
 
         # make sure the written molecule differs from the reference
         assert mol.ToBinary() != self.levalbuterol.ToBinary()
@@ -673,7 +678,7 @@ class TestMolWriter(TestMolIO):
         writer.close()
         self.reader.open(filename)
         mols = self.reader.get_mols()
-        mol = mols.next()
+        mol = next(mols)
 
         # make sure the written molecule differs from the reference
         assert mol.ToBinary() != self.levalbuterol.ToBinary()

@@ -1,12 +1,12 @@
 """
 Miscellaneous.
 """
+from __future__ import print_function, division, absolute_import
+from rdkit import Chem
 
 __author__ = "Steven Kearnes"
 __copyright__ = "Copyright 2014, Stanford University"
 __license__ = "3-clause BSD"
-
-from rdkit import Chem
 
 
 class PicklableMol(Chem.Mol):

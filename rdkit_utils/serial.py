@@ -1,12 +1,11 @@
 """
 I/O functions: reading and writing molecules.
 """
-
-__author__ = "Steven Kearnes"
-__copyright__ = "Copyright 2014, Stanford University"
-__license__ = "3-clause BSD"
-
-import cPickle
+from __future__ import print_function, division, absolute_import
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 import gzip
 import numpy as np
 import os
@@ -15,6 +14,11 @@ import warnings
 from rdkit import Chem
 from rdkit.Chem import AllChem
 from rdkit.Chem.SaltRemover import SaltRemover
+
+
+__author__ = "Steven Kearnes"
+__copyright__ = "Copyright 2014, Stanford University"
+__license__ = "3-clause BSD"
 
 
 class MolIO(object):
@@ -224,7 +228,7 @@ class MolReader(MolIO):
         # skip read errors
         while True:
             try:
-                mol = mols.next()
+                mol = next(mols)
             except StopIteration:
                 break
             except Exception:
@@ -285,7 +289,7 @@ class MolReader(MolIO):
         """
         while True:
             try:
-                mols = cPickle.load(self.f)
+                mols = pickle.load(self.f)
                 for mol in np.atleast_1d(mols):
                     yield mol
             except EOFError:
@@ -481,4 +485,4 @@ class MolWriter(MolIO):
         mols : iterable
             Molecules to write.
         """
-        cPickle.dump(mols, self.f, cPickle.HIGHEST_PROTOCOL)
+        pickle.dump(mols, self.f, pickle.HIGHEST_PROTOCOL)

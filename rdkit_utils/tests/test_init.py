@@ -1,7 +1,11 @@
 """
 Tests for miscellaneous utilities.
 """
-import cPickle
+from __future__ import print_function, division, absolute_import
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 import unittest
 
 from rdkit import Chem
@@ -19,8 +23,8 @@ class TestPicklableMol(unittest.TestCase):
 
     def test_picklable_mol(self):
         """Test PicklableMol."""
-        mol = cPickle.loads(cPickle.dumps(PicklableMol(self.mol),
-                                          cPickle.HIGHEST_PROTOCOL))
+        mol = pickle.loads(pickle.dumps(PicklableMol(self.mol),
+                                        pickle.HIGHEST_PROTOCOL))
         assert mol.HasProp('_Name')
         assert mol.GetProp('_Name') == self.mol.GetProp('_Name')
 
