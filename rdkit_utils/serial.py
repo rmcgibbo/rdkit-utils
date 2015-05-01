@@ -20,7 +20,7 @@ from rdkit.Chem.SaltRemover import SaltRemover
 __author__ = "Steven Kearnes"
 __copyright__ = "Copyright 2014, Stanford University"
 __license__ = "3-clause BSD"
-PY3 = sys.version_info >= (3,0)
+PY3 = sys.version_info >= (3, 0)
 
 
 class MolIO(object):
