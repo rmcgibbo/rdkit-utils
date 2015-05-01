@@ -10,6 +10,7 @@ import gzip
 import numpy as np
 import os
 import warnings
+import sys
 
 from rdkit import Chem
 from rdkit.Chem import AllChem
@@ -19,6 +20,7 @@ from rdkit.Chem.SaltRemover import SaltRemover
 __author__ = "Steven Kearnes"
 __copyright__ = "Copyright 2014, Stanford University"
 __license__ = "3-clause BSD"
+PY3 = sys.version_info >= (3,0)
 
 
 class MolIO(object):
@@ -35,7 +37,6 @@ class MolIO(object):
     def __init__(self, f=None, mol_format=None):
         self.f = f
         self.mol_format = mol_format
-
         # placeholder
         self.filename = None
 
@@ -231,8 +232,10 @@ class MolReader(MolIO):
                 mol = next(mols)
             except StopIteration:
                 break
-            except Exception:
-                warnings.warn('Skipping molecule.')
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                warnings.warn('Skipping molecule: %s' % e)
                 continue
             else:
                 if mol is not None:
@@ -242,6 +245,9 @@ class MolReader(MolIO):
         """
         Read SDF molecules from a file-like object.
         """
+        if PY3 and isinstance(self.f.mode, str) and 'b' not in self.f.mode:
+            raise IOError('File must be opened for binary IO')
+
         supplier = Chem.ForwardSDMolSupplier(self.f,
                                              removeHs=self.remove_hydrogens)
         for mol in supplier:
