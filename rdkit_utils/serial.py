@@ -245,8 +245,8 @@ class MolReader(MolIO):
         """
         Read SDF molecules from a file-like object.
         """
-        if PY3 and isinstance(self.f.mode, str) and 'b' not in self.f.mode:
-            raise IOError('File must be opened for binary IO')
+        #if PY3 and isinstance(self.f.mode, str) and 'b' not in self.f.mode:
+        #    raise IOError('File must be opened for binary IO')
 
         supplier = Chem.ForwardSDMolSupplier(self.f,
                                              removeHs=self.remove_hydrogens)
@@ -409,7 +409,7 @@ class MolWriter(MolIO):
         super(MolWriter, self).__init__(f, mol_format)
         self.stereo = stereo
 
-    def open(self, filename, mol_format=None, mode='wb'):
+    def open(self, filename, mol_format=None, mode='w'):
         """
         Open output file.
 
@@ -462,6 +462,8 @@ class MolWriter(MolIO):
                     w.write(mol, confId=conf.GetId())
             else:
                 w.write(mol)
+
+        w.flush()
         w.close()
 
     def _write_smiles(self, mols):

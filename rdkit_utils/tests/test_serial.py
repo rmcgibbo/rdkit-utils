@@ -8,6 +8,7 @@ try:
 except ImportError:
     import pickle
     from io import StringIO
+import os
 import gzip
 import shutil
 import tempfile
@@ -489,7 +490,8 @@ class TestMolWriter(TestMolIO):
         Write an SDF file.
         """
         _, filename = tempfile.mkstemp(suffix='.sdf', dir=self.temp_dir)
-        self.writer.open(filename, mode='wb')
+        os.close(_)
+        self.writer.open(filename, mode='w')
         self.writer.write([self.aspirin])
         self.writer.close()
         self.reader.open(filename, mode='rb')
@@ -508,7 +510,8 @@ class TestMolWriter(TestMolIO):
         Write a compressed SDF file.
         """
         _, filename = tempfile.mkstemp(suffix='.sdf.gz', dir=self.temp_dir)
-        self.writer.open(filename)
+        os.close(_)
+        self.writer.open(filename, mode='w')
         self.writer.write([self.aspirin])
         self.writer.close()
         self.reader.open(filename)
@@ -547,6 +550,7 @@ class TestMolWriter(TestMolIO):
         Write a compressed SMILES file.
         """
         _, filename = tempfile.mkstemp(suffix='.smi.gz', dir=self.temp_dir)
+        os.close(_)
         self.writer.open(filename)
         self.writer.write([self.aspirin])
         self.writer.close()
@@ -567,6 +571,7 @@ class TestMolWriter(TestMolIO):
         Write a pickle.
         """
         _, filename = tempfile.mkstemp(suffix='.pkl', dir=self.temp_dir)
+        os.close(_)
         self.writer.open(filename)
         self.writer.write([self.aspirin])
         self.writer.close()
@@ -587,6 +592,7 @@ class TestMolWriter(TestMolIO):
         Write a compressed pickle.
         """
         _, filename = tempfile.mkstemp(suffix='.pkl.gz', dir=self.temp_dir)
+        os.close(_)
         self.writer.open(filename)
         self.writer.write([self.aspirin])
         self.writer.close()
@@ -619,6 +625,7 @@ class TestMolWriter(TestMolIO):
         Test stereochemistry preservation when writing to SDF.
         """
         _, filename = tempfile.mkstemp(suffix='.sdf', dir=self.temp_dir)
+        os.close(_)
         writer = serial.MolWriter(stereo=True)
         writer.open(filename)
         writer.write([self.levalbuterol])
@@ -635,6 +642,7 @@ class TestMolWriter(TestMolIO):
         ref_mol = Chem.MolFromSmiles(Chem.MolToSmiles(self.levalbuterol,
                                                       isomericSmiles=True))
         _, filename = tempfile.mkstemp(suffix='.smi', dir=self.temp_dir)
+        os.close(_)
         writer = serial.MolWriter(stereo=True)
         writer.open(filename)
         writer.write([self.levalbuterol])
@@ -648,6 +656,7 @@ class TestMolWriter(TestMolIO):
         Test stereochemistry removal when writing to SDF.
         """
         _, filename = tempfile.mkstemp(suffix='.sdf', dir=self.temp_dir)
+        os.close(_)
         writer = serial.MolWriter(stereo=False)
         writer.open(filename)
         writer.write([self.levalbuterol])
@@ -672,6 +681,7 @@ class TestMolWriter(TestMolIO):
         Test stereochemistry removal when writing to SMILES.
         """
         _, filename = tempfile.mkstemp(suffix='.smi', dir=self.temp_dir)
+        os.close(_)
         writer = serial.MolWriter(stereo=False)
         writer.open(filename)
         writer.write([self.levalbuterol])
@@ -695,8 +705,10 @@ class TestMolWriter(TestMolIO):
         Test use of 'with' statement to write molecules.
         """
         _, filename = tempfile.mkstemp(suffix='.sdf', dir=self.temp_dir)
-        with self.writer.open(filename) as writer:
+        os.close(_)
+        with self.writer.open(filename, mode='w') as writer:
             writer.write([self.aspirin])
+
         self.reader.open(filename)
         mols = self.reader.get_mols()
 
